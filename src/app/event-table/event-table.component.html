@@ -1,0 +1,69 @@
+<!-- Author: Ross Harvey-->
+<!-- Date: 2022-07-01-->
+
+<form style="display: flex; flex-direction: column" (input)="fileChanged({event : $event})">
+    <label for="input-file">Upload File</label>
+    <input id="input-file" type="file">
+</form>
+
+<div class="mat-elevation-z8" *ngIf="dataSource">
+    <div style="display: flex; width: 100%; align-items: center; justify-content: center; ">
+        <app-date-range-picker (dateChange)="dateFilter($event)"></app-date-range-picker>
+        <mat-form-field *ngFor="let filter of filterColumns" style="margin-left: 15px;">
+            <mat-label>Filter {{filter.displayName}}</mat-label>
+            <select matNativeControl name="{{filter.displayName}}" (change)="updateTextFilter(filter,$event)">
+                <option value=""></option>
+                <option [value]="item" *ngFor="let item of filter.options">{{item}}</option>
+            </select>
+        </mat-form-field>
+        <mat-form-field style="margin-left: 15px;">
+            <mat-label>Filter Fields</mat-label>
+            <mat-select multiple (selectionChange)="updateFieldsFilter($event)">
+                <mat-option *ngFor="let field of uniqueFields" [value]="field">{{field}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+
+    <table mat-table class="full-width-table" matSort aria-label="Elements">
+        <!-- Event Type Column -->
+        <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef>Event Type</th>
+            <td mat-cell *matCellDef="let row">{{row.eventType}}</td>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <td mat-cell *matCellDef="let row">{{row.entityName}}</td>
+        </ng-container>
+
+        <!-- Entity ID Column -->
+        <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef>ID</th>
+            <td mat-cell *matCellDef="let row">{{row.entityID}}</td>
+        </ng-container>
+
+        <!-- Updated Fields Column -->
+        <ng-container matColumnDef="updated_fields">
+            <th mat-header-cell *matHeaderCellDef> Updated Fields</th>
+            <td mat-cell *matCellDef="let row">{{row.fieldsUpdated}}</td>
+        </ng-container>
+
+        <!-- Timestamp Column -->
+        <ng-container matColumnDef="timestamp">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Timestamp</th>
+            <td mat-cell *matCellDef="let row">{{row.timestamp.toLocaleString()}}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <mat-paginator #paginator
+                   [length]="resultsLength"
+                   [pageIndex]="0"
+                   [pageSize]="20"
+                   [pageSizeOptions]="[5, 10, 20]"
+                   aria-label="Select page">
+    </mat-paginator>
+</div>
